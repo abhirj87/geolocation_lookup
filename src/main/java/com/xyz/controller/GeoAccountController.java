@@ -12,10 +12,13 @@ package com.xyz.controller;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
+import com.wordnik.swagger.annotations.Api;
+import com.wordnik.swagger.annotations.ApiOperation;
+import com.wordnik.swagger.annotations.ApiResponse;
+import com.wordnik.swagger.annotations.ApiResponses;
 
 import com.xyz.geolocation.model.LatLng;
 import com.xyz.geolocation.model.Result;
-import com.xyz.geolocation.model.Response;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +38,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import springfox.documentation.service.ResponseMessage;
 
+@Api(basePath = "/geolocation", value = "geolocation", description = "Operations on geolocation reverse lookup", produces = "application/json")
 @RestController
 @RequestMapping(value = "/geolocation/")
 public class GeoAccountController {
@@ -53,24 +60,25 @@ public class GeoAccountController {
     private static final String APIKEY
             = "AIzaSyCvx0STKKs0JeKEsONS3YcEsf3RuwlASIc";
 
+    
+    
     @RequestMapping(value = "/latlng/",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-
-    public Response getLocationAddress(@Valid @RequestBody LatLng latLng) {
+    public ResponseEntity<ResponseMessage> getLocationAddress(@Valid @RequestBody LatLng latLng) {
         try {
-            List<Result> results = new ArrayList();
-            results.add(getAddress(latLng));
-            return new Response(Response.SUCCESS, null, results);
+            return new ResponseEntity(getAddressUsingGoogleMapsAPI(latLng),HttpStatus.OK);
         } catch (Exception ex) {
             LOGGER.error("Error: " + ex.getMessage());
-            return new Response(Response.ERROR, ex.getMessage(), null);
+            return new ResponseEntity(null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    
+
     @RequestMapping(value = "/latlng/{latlng}", method = RequestMethod.GET)
-    public Response getLocationAddress(
+    public ResponseEntity<ResponseMessage> getLocationAddress(
             @PathVariable("latlng")
             @NotNull
             @Pattern(regexp = "-*[0-9]*[.]{1}[0-9]*,-*[0-9]*[.]{1}[0-9]*",
@@ -80,38 +88,31 @@ public class GeoAccountController {
 
         try {
             String[] parts = latLng.split(",");
-            result = getAddress(new LatLng(
+            result = getAddressUsingGoogleMapsAPI(new LatLng(
                     Double.parseDouble(parts[0]),
                     Double.parseDouble(parts[1]))
             );
 
-            List<Result> results = new ArrayList();
-            results.add(result);
-
-            return new Response(Response.SUCCESS, null, results);
+            return new ResponseEntity(result,HttpStatus.OK);
 
         } catch (Exception e) {
             LOGGER.error("Unable to process the give input: " + latLng
                     + " Encountered exception: " + e.getMessage());
-            return new Response(Response.ERROR, e.getMessage(), null);
+            return new ResponseEntity(null,HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @RequestMapping(value = "/recent_lookups/")
-    private Response getRecentResults() {
-        try {
+
+
+    @RequestMapping(value = "/recent_lookups")
+    private ResponseEntity<List<Result>> getRecentResults() {
             List<Result> results = new ArrayList<>();
             LOOK_UP_TABLE.values().forEach(x -> results.add(x));
             LOGGER.info("results for the lookup: " + results);
-            return new Response(Response.SUCCESS, null, results);
-
-        } catch (Exception e) {
-            return new Response(Response.ERROR, e.getMessage(), null);
-        }
-
+            return new ResponseEntity(results,HttpStatus.OK);
     }
 
-    private Result getAddress(LatLng latLng) throws Exception {
+    private Result getAddressUsingGoogleMapsAPI(LatLng latLng) throws Exception {
 
         Result result = LOOK_UP_TABLE.get(latLng);
         if (result != null) {
