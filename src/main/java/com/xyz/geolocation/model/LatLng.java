@@ -5,6 +5,7 @@
  */
 package com.xyz.geolocation.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -25,13 +26,15 @@ public class LatLng {
     /**
      * The latitude of this location.
      */
-    @NotNull(message="Latitude cannot be null")
+//    @ApiModelProperty(notes = "Latitude", required = true)
+    @NotNull(message = "Latitude cannot be null")
     public double lat;
 
     /**
      * The longitude of this location.
      */
-    @NotNull(message="Longitude cannot be null")
+//    @ApiModelProperty(notes = "Longitude", required = true)
+    @NotNull(message = "Longitude cannot be null")
     public double lng;
 
 }

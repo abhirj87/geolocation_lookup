@@ -18,10 +18,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = { Exception.class })
+    @ExceptionHandler(value = {Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<String> unknownException(Exception ex) {
-        
-        return new ResponseEntity("Error occured: "+ex.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return new ResponseEntity("Error occured: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

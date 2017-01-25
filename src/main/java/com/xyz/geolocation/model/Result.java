@@ -5,7 +5,7 @@
  */
 package com.xyz.geolocation.model;
 
-import java.security.Timestamp;
+import java.util.Date;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -18,15 +18,19 @@ import javax.validation.constraints.NotNull;
 @lombok.NoArgsConstructor
 @lombok.EqualsAndHashCode
 @lombok.AllArgsConstructor
+
 public class Result {
+//@ApiModelProperty(notes = "Latitude Longitude", required = true)
 
     @NotNull
     private LatLng latLng;
 
+//@ApiModelProperty(notes = "Address of Lat Lng", required = true)
     @NotNull
     private String geocodingAddress;
-    
+
+//@ApiModelProperty(notes = "Timestamp", required = true)
     @NotNull
-    private Long timeOfrequest;
+    private String timeOfrequest;
 
 }
