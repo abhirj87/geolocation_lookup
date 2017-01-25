@@ -44,7 +44,8 @@ http://localhost:8001/swagger-ui.html#/geo-account-controller
 Examples:
 It supports GET and POST methods and application/json only.
 
-1: Getting address via POST(sending the json via request body)
+Ex 1:Getting address via POST(sending the json via request body)
+----------------------------------------------------------------
 
 localhost:8001/geolocation/latlng/
 {
@@ -53,7 +54,7 @@ localhost:8001/geolocation/latlng/
 }
 
 Response:
-----------
+
 {
 "latLng":{"lat":33.969601,"lng":-84.100033},
 "geocodingAddress":"2651 Satellite Blvd, Duluth, GA 30096, USA",
@@ -63,7 +64,9 @@ Response:
 
 
 
-2: Getting address via GET
+Ex 2: Getting address via GET
+------------------------------
+
 http://localhost:8001/geolocation/latlng/40.714224,-73.961452 
 
 Response:
@@ -72,7 +75,8 @@ Response:
 
 
 
-3: Doing a lookup of recent 10 address searches
+Ex 3: Doing a lookup of recent 10 address searches
+---------------------------------------------------
 
 http://localhost:8001/geolocation/recent_lookups/
 
