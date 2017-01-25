@@ -1,4 +1,4 @@
-package com.xyz;
+package com.xyz.geolocation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

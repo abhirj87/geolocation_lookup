@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.xyz.controller;
+package com.xyz.geolocation.controller;
 
 /**
  *
@@ -66,13 +66,11 @@ public class GeoAccountController {
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseMessage> getLocationAddress(@Valid @RequestBody LatLng latLng) {
-        try {
-            return new ResponseEntity(getAddressUsingGoogleMapsAPI(latLng),HttpStatus.OK);
-        } catch (Exception ex) {
-            LOGGER.error("Error: " + ex.getMessage());
-            return new ResponseEntity(null,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public ResponseEntity<ResponseMessage> getLocationAddress(
+            @Valid 
+            @RequestBody LatLng latLng) throws Exception {
+            return new ResponseEntity(getAddressUsingGoogleMapsAPI(latLng),
+                    HttpStatus.OK);
     }
 
     
@@ -82,11 +80,11 @@ public class GeoAccountController {
             @PathVariable("latlng")
             @NotNull
             @Pattern(regexp = "-*[0-9]*[.]{1}[0-9]*,-*[0-9]*[.]{1}[0-9]*",
-                    message = "Invalid Latitude/Longitude") String latLng) throws Exception {
+                    message = "Invalid Latitude/Longitude") 
+                    String latLng) throws Exception {
 
         Result result;
 
-        try {
             String[] parts = latLng.split(",");
             result = getAddressUsingGoogleMapsAPI(new LatLng(
                     Double.parseDouble(parts[0]),
@@ -94,12 +92,6 @@ public class GeoAccountController {
             );
 
             return new ResponseEntity(result,HttpStatus.OK);
-
-        } catch (Exception e) {
-            LOGGER.error("Unable to process the give input: " + latLng
-                    + " Encountered exception: " + e.getMessage());
-            return new ResponseEntity(null,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
     }
 
 
