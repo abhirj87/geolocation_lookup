@@ -5,7 +5,6 @@
  */
 package com.xyz.geolocation.model;
 
-import java.util.Date;
 import javax.validation.constraints.NotNull;
 
 /**

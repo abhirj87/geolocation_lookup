@@ -5,7 +5,6 @@
  */
 package com.xyz.geolocation.model;
 
-import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotNull;
 
 /**
