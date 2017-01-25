@@ -53,7 +53,7 @@ localhost:8001/geolocation/latlng/
 }
 
 Response:
-
+----------
 {
 "latLng":{"lat":33.969601,"lng":-84.100033},
 "geocodingAddress":"2651 Satellite Blvd, Duluth, GA 30096, USA",
@@ -61,11 +61,15 @@ Response:
 }
 
 
+
+
 2: Getting address via GET
 http://localhost:8001/geolocation/latlng/40.714224,-73.961452 
 
 Response:
+----------
 {"latLng":{"lat":33.969601,"lng":-84.100033},"geocodingAddress":"2651 Satellite Blvd, Duluth, GA 30096, USA","timeOfrequest":"Tue Jan 24 23:42:32 EST 2017"}
+
 
 
 3: Doing a lookup of recent 10 address searches
@@ -73,5 +77,5 @@ Response:
 http://localhost:8001/geolocation/recent_lookups/
 
 Response:
-
+----------
 [{"latLng":{"lat":33.969601,"lng":-84.100033},"geocodingAddress":"2651 Satellite Blvd, Duluth, GA 30096, USA","timeOfrequest":"Tue Jan 24 23:42:32 EST 2017"},{"latLng":{"lat":40.714224,"lng":-73.0},"geocodingAddress":"Trustees Walk, Patchogue, NY 11772, USA","timeOfrequest":"Tue Jan 24 23:44:13 EST 2017"}]
