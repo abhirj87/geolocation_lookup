@@ -14,6 +14,7 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
 import com.xyz.geolocation.model.LatLng;
 import com.xyz.geolocation.model.Result;
+import com.xyz.geolocation.utils.GeoCoding;
 import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +27,8 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,24 +39,30 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.service.ResponseMessage;
 
+/**
+ *
+ * @author abhiram
+ */
 @Api(basePath = "/geolocation", value = "geolocation", description = "Operations on geolocation reverse lookup", produces = "application/json")
 @RestController
 @RequestMapping(value = "/geolocation/")
 public class GeoAccountController {
 
+    /**
+     *
+     */
     public static final Logger LOGGER = LoggerFactory.getLogger(GeoAccountController.class);
-    private static final Map<LatLng, Result> LOOK_UP_TABLE = Collections.synchronizedMap(new LinkedHashMap(10, 1.0f, false) {
-        private static final int MAX_ENTRIES = 10;
 
-        @Override
-        protected boolean removeEldestEntry(Map.Entry eldest) {
-            return size() > MAX_ENTRIES;
-        }
-    });
+    @Autowired
+    private Environment env;
 
-    private static final String APIKEY
-            = "AIzaSyCvx0STKKs0JeKEsONS3YcEsf3RuwlASIc";
 
+    /**
+     *
+     * @param latLng
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/latlng/",
             method = RequestMethod.POST,
             produces = MediaType.APPLICATION_JSON_VALUE,
@@ -61,10 +70,17 @@ public class GeoAccountController {
     public ResponseEntity<ResponseMessage> getLocationAddress(
             @Valid
             @RequestBody LatLng latLng) throws Exception {
-        return new ResponseEntity(getAddressUsingGoogleMapsAPI(latLng),
+        GeoCoding g = new GeoCoding(env,latLng);
+        return new ResponseEntity(g.getAddressUsingGoogleMapsAPI(),
                 HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param latLng
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/latlng/{latlng}", method = RequestMethod.GET)
     public ResponseEntity<ResponseMessage> getLocationAddress(
             @PathVariable("latlng")
@@ -75,46 +91,17 @@ public class GeoAccountController {
         Result result;
 
         String[] parts = latLng.split(",");
-        result = getAddressUsingGoogleMapsAPI(new LatLng(
+        result = new GeoCoding(env,new LatLng(
                 Double.parseDouble(parts[0]),
                 Double.parseDouble(parts[1]))
-        );
+        ).getAddressUsingGoogleMapsAPI();
 
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/recent_lookups", method = RequestMethod.GET)
     private ResponseEntity<List<Result>> getRecentResults() {
-        List<Result> results = new ArrayList<>();
-        LOOK_UP_TABLE.values().forEach(x -> results.add(x));
-        LOGGER.info("results for the lookup: " + results);
-        return new ResponseEntity(results, HttpStatus.OK);
-    }
-
-    private Result getAddressUsingGoogleMapsAPI(LatLng latLng) throws Exception {
-
-        Result result = LOOK_UP_TABLE.get(latLng);
-        if (result != null) {
-            LOGGER.info("Address found in the lookup: " + result);
-        } else {
-            LOGGER.info("Latlong received: " + latLng);
-            GeoApiContext context = new GeoApiContext().setApiKey(APIKEY);
-            GeocodingResult[] addresses = GeocodingApi.reverseGeocode(
-                    context,
-                    new com.google.maps.model.LatLng(
-                            latLng.getLat(),
-                            latLng.getLng())).await();
-
-            String matchingAddress = addresses.length > 0
-                    ? addresses[0].formattedAddress : null;
-            result = new Result(latLng, matchingAddress, new Date(System.currentTimeMillis()).toString());
-
-            if (null != result) {
-                LOOK_UP_TABLE.put(latLng, result);
-            }
-            LOGGER.info("result: " + addresses[0].formattedAddress);
-        }
-        return result;
+        return new ResponseEntity(GeoCoding.getRecentLookUp(), HttpStatus.OK);
     }
 
 }

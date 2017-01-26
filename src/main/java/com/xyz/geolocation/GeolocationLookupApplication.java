@@ -9,15 +9,27 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+/**
+ *
+ * @author abhiram
+ */
 @SpringBootApplication
 @EnableSwagger2
 
 public class GeolocationLookupApplication {
 
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         SpringApplication.run(GeolocationLookupApplication.class, args);
     }
 
+    /**
+     *
+     * @return
+     */
     @Bean
     public Docket swaggerSettings() {
         return new Docket(DocumentationType.SWAGGER_2)
