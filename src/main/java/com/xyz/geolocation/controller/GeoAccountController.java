@@ -9,19 +9,11 @@ package com.xyz.geolocation.controller;
  *
  * @author abhiram
  */
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.model.GeocodingResult;
 import com.xyz.geolocation.model.LatLng;
 import com.xyz.geolocation.model.Result;
-import com.xyz.geolocation.utils.GeoCoding;
+import com.xyz.geolocation.service.GeoCodingImpl;
 import io.swagger.annotations.Api;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -56,6 +48,8 @@ public class GeoAccountController {
     @Autowired
     private Environment env;
 
+    @Autowired
+    private GeoCodingImpl geoCoding;
 
     /**
      *
@@ -64,14 +58,13 @@ public class GeoAccountController {
      * @throws Exception
      */
     @RequestMapping(value = "/latlng/",
-            method = RequestMethod.POST,
+            method = {RequestMethod.POST, RequestMethod.GET},
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseMessage> getLocationAddress(
             @Valid
             @RequestBody LatLng latLng) throws Exception {
-        GeoCoding g = new GeoCoding(env,latLng);
-        return new ResponseEntity(g.getAddressUsingGoogleMapsAPI(),
+        return new ResponseEntity(geoCoding.getAddressUsingGoogleMapsAPI(latLng),
                 HttpStatus.OK);
     }
 
@@ -91,17 +84,17 @@ public class GeoAccountController {
         Result result;
 
         String[] parts = latLng.split(",");
-        result = new GeoCoding(env,new LatLng(
+        result = geoCoding.getAddressUsingGoogleMapsAPI(new LatLng(
                 Double.parseDouble(parts[0]),
                 Double.parseDouble(parts[1]))
-        ).getAddressUsingGoogleMapsAPI();
+        );
 
         return new ResponseEntity(result, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/recent_lookups", method = RequestMethod.GET)
     private ResponseEntity<List<Result>> getRecentResults() {
-        return new ResponseEntity(GeoCoding.getRecentLookUp(), HttpStatus.OK);
+        return new ResponseEntity(geoCoding.getRecentLookUp(), HttpStatus.OK);
     }
 
 }

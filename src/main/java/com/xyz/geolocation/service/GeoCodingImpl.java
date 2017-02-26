@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.xyz.geolocation.utils;
+package com.xyz.geolocation.service;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -20,25 +20,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author abhiram
  */
-public class GeoCoding {
+@Service
+public class GeoCodingImpl implements GeoCoding {
 
-    private Environment env;
-    private LatLng latLng;
-
-    public GeoCoding(Environment env, LatLng latLng) {
-        this.env = env;
-        this.latLng = latLng;
-    }
-
-    public GeoCoding() {
-    }
-   
-
+    @Autowired
+    public Environment env;
 
     private static final Map<LatLng, Result> LOOK_UP_TABLE = Collections.synchronizedMap(new LinkedHashMap(10, 1.0f, false) {
         private static final int MAX_ENTRIES = 10;
@@ -49,9 +41,10 @@ public class GeoCoding {
         }
     });
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(GeoCoding.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(GeoCodingImpl.class);
 
-    public Result getAddressUsingGoogleMapsAPI() throws Exception {
+    @Override
+    public Result getAddressUsingGoogleMapsAPI(LatLng latLng) throws Exception {
 
         String APIKEY = env.getProperty("api.key");
         Result result = LOOK_UP_TABLE.get(latLng);
@@ -78,7 +71,8 @@ public class GeoCoding {
         return result;
     }
 
-    public static List<Result> getRecentLookUp() {
+    @Override
+    public List<Result> getRecentLookUp() {
         List<Result> results = new ArrayList<>();
         LOOK_UP_TABLE.values().forEach(x -> results.add(x));
         LOGGER.info("results for the lookup: " + results);

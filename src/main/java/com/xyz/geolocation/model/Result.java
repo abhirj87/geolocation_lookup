@@ -6,6 +6,7 @@
 package com.xyz.geolocation.model;
 
 import javax.validation.constraints.NotNull;
+import org.springframework.stereotype.Component;
 
 /**
  *
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @lombok.NoArgsConstructor
 @lombok.EqualsAndHashCode
 @lombok.AllArgsConstructor
-
+@Component
 public class Result {
 //@ApiModelProperty(notes = "Latitude Longitude", required = true)
 
